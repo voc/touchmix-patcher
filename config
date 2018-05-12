@@ -1,0 +1,1 @@
+export ROOT_PW=$(perl -e 'print crypt($ENV{"ROOT_PW_PLAIN"}, "ld");')
