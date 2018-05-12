@@ -34,6 +34,4 @@ if [[ -z "$offset" ]]; then
 fi
 
 echo "+++ patching $target at offset $offset"
-dd if="$override" of="$target" obs=1 seek="$offset" conv=notrunc
-
-bash
+dd if="$override" of="$target" obs=1 seek="$offset" conv=notrunc status=none
