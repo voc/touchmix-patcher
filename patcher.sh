@@ -11,6 +11,14 @@ _exiterr() {
 	exit 1
 }
 
+_fakeroot() {
+	if [[ -f "${workdir}/fakeroot" ]]; then
+		fakeroot -s "${workdir}/fakeroot" -i "${workdir}/fakeroot" "$@"
+	else
+		fakeroot -s "${workdir}/fakeroot" "$@"
+	fi
+}
+
 if [[ $# -ne 3 ]]; then
 	echo "usage: $0 config Vx.y.z.tar.gz output.tar.gz"
 	exit 1
@@ -50,23 +58,23 @@ rm "${workdir}/unpack/upgrade-file"
 
 echo "+ extracting rootfs"
 mkdir "${workdir}/root"
-fakeroot -s "${workdir}/fakeroot" tar --warning=no-timestamp -xp -C "${workdir}/root" -f "${workdir}/unpack/root.tar.gz"
+_fakeroot tar --warning=no-timestamp -x -C "${workdir}/root" -f "${workdir}/unpack/root.tar.gz"
 rm "${workdir}/unpack/root.tar.gz"
 
 echo "+ applying patches"
 
 for task in "${scriptpath}/patch.d/"*".sh"; do
 	taskname="$(basename "$task")"
-	printf "++ running patch step %s\\n" ${taskname%%.sh}
+	printf "++ running patch step %s\\n" "${taskname%%.sh}"
 	(
 		cd "${workdir}/root"
-		exec fakeroot -s "${workdir}/fakeroot" "$task"
+		_fakeroot "$task"
 	)
 done
 
 echo "+ building tarball"
 mkdir "${workdir}/patched"
-fakeroot -s "${workdir}/fakeroot" tar -pczf "${workdir}/patched/root.tar.gz" -C "${workdir}/root/" --transform 's,^./,,g' .
+_fakeroot tar -pczf "${workdir}/patched/root.tar.gz" -C "${workdir}/root/" --transform 's,^./,,g' .
 rm -rf "${workdir}/root"
 
 echo "+ encrypting update file"
