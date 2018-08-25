@@ -10,4 +10,5 @@ url=$(echo "$img_data" | cut -d ' ' -f 3)
 mkdir input output
 wget -O "input/V${version}.tar.gz" "$url"
 
-exec ./patcher.sh config "input/V${version}.tar.gz" "output/V${version}.tar.gz"
+./patcher.sh config "input/V${version}.tar.gz" "output/V${version}.tar.gz"
+./make_versions_xml.sh versions_orig.xml versions.xml "$version" "output/V${version}.tar.gz"

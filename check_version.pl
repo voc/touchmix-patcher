@@ -25,4 +25,4 @@ my ($checksum) = $data =~ /Checksum="(.*?)"/;
 
 say "$build $checksum ${baseurl}/$image";
 
-write_file("${build}.xml", $data);
+write_file("versions_orig.xml", $data);
